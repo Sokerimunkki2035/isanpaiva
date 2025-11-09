@@ -2,46 +2,26 @@
 <html lang="fi">
 <head>
 <meta charset="utf-8">
-<title>Valitse puhe</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Päivän tervehdys</title>
 <style>
-  body{font-family:system-ui,Arial;padding:28px;text-align:center}
-  h2{margin-bottom:18px}
-  button{display:block;width:100%;max-width:480px;margin:10px auto;padding:14px 16px;font-size:18px;border-radius:12px;border:1px solid #ddd}
-  .stop{background:#eee}
+body { font-family:sans-serif; padding:20px; }
+button { font-size:22px; padding:18px; width:100%; }
 </style>
 </head>
 <body>
-  <h2>Valitse puhe</h2>
 
-  <button onclick="speak(t1)">1) Päivän tervehdys</button>
-  <button onclick="speak(t2)">2) Motivoiva puhe</button>
-  <button onclick="speak(t3)">3) Rento kahviseura</button>
-  <button class="stop" onclick="speechSynthesis.cancel()">⏹ Stop</button>
+<h2>Paina nappia</h2>
+<button id="btn">► Kuuntele tervehdys</button>
 
 <script>
-const t1 = "Tämä on päivän tervehdys. Ääni toimii, ja tämä on ensimmäinen versio.";
-const t2 = "Joskus kaikki ei mene suunnitelman mukaan. Silti sinä nouset aina lopulta.";
-const t3 = "Hei. Istutaan minuutti. Hengitä rauhassa. Nyt ei ole kiire mihinkään.";
+const text = "Hyvää isänpäivää. Olet tärkeä. Minä ajattelen sinua.";
 
-function preferFinnishVoice() {
-  const vs = speechSynthesis.getVoices();
-  // yritä löytää suomalainen miesääni
-  return vs.find(v => /fi/i.test(v.lang) && /male|mies|suomi/i.test(v.name)) ||
-         vs.find(v => /fi/i.test(v.lang)) || null;
-}
-
-function speak(text){
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = "fi-FI";
-  const v = preferFinnishVoice();
-  if (v) u.voice = v;
-  speechSynthesis.speak(u);
-}
-if (speechSynthesis.onvoiceschanged !== undefined) {
-  speechSynthesis.onvoiceschanged = () => {}; // varmistaa voice-listan latauksen
-}
+document.getElementById("btn").onclick = () => {
+   let u = new SpeechSynthesisUtterance(text);
+   u.lang = "fi-FI";
+   speechSynthesis.speak(u);
+};
 </script>
+
 </body>
 </html>
