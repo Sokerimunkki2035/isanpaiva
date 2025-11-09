@@ -1,37 +1,344 @@
+/html>
 <!DOCTYPE html>
 <html lang="fi">
 <head>
-  <meta charset="utf-8"/>
-  <title>Valitse puhe</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ääniystävä</title>
+
+  <!-- PWA manifest -->
+  <link rel="manifest" href="/isanpaiva/manifest.json">
+  <meta name="theme-color" content="#ffffff"/>
+
+  <style>
+    body{font-family:system-ui,Arial;margin:0;background:#fafafa;color:#111}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:#fff;box-shadow:0 1px 8px rgba(0,0,0,.06);position:sticky;top:0}
+    h1{font-size:20px;margin:0}
+    .lang{display:flex;gap:8px}
+    .lang button{padding:8px 12px;border-radius:10px;border:1px solid #ddd;background:#fff}
+    main{padding:22px}
+    .card{background:#fff;border:1px solid #eee;border-radius:16px;padding:18px 16px;margin:12px 0;box-shadow:0 1px 6px rgba(0,0,0,.05)}
+    .card h2{margin:0 0 6px 0;font-size:18px}
+    .card p{margin:0 0 12px 0;color:#555}
+    .card button{width:100%;padding:14px 16px;font-size:18px;border-radius:12px;border:1px solid #ddd;background:#f6f6f6}
+    .row{display:grid;gap:12px}
+    .stop{margin-top:8px;background:#eee}
+    footer{padding:24px 16px;color:#777;text-align:center}
+  </style>
 </head>
-<body style="font-family:sans-serif; text-align:center; margin-top:50px;">
+<body>
+  <header>
+    <h1>Ääniystävä</h1>
+    <div class="lang">
+      <button id="fiBtn" aria-pressed="true">Suomi</button>
+      <button id="enBtn" aria-pressed="false">English</button>
+    </div>
+  </header>
 
-<h1>Valitse puhe</h1>
+  <main>
+    <div class="row">
+      <div class="card">
+        <h2>Juhlapyhät</h2>
+        <p>Esim. joulu, uusivuosi, syntymäpäivä…</p>
+        <button onclick="playRandom('holidays')">► Puhu juhlapuhe</button>
+        <button class="stop" onclick="stopSpeak()">⏹ Stop</button>
+      </div>
 
-<button onclick="play(p1)">1) Päivän tervehdys</button><br><br>
-<button onclick="play(p2)">2) Motivoiva puhe</button><br><br>
-<button onclick="play(p3)">3) Rento kahviseura</button><br><br>
+      <div class="card">
+        <h2>Päivän fiilis</h2>
+        <p>Hyvä tai huono päivä – lyhyt viesti.</p>
+        <button onclick="playRandom('mood')">► Puhu fiisipuhe</button>
+        <button class="stop" onclick="stopSpeak()">⏹ Stop</button>
+      </div>
 
-<button onclick="stop()">🔳 Stop</button>
+      <div class="card">
+        <h2>Juomahetki</h2>
+        <p>Kahvi- tai teehetken kaveri.</p>
+        <button onclick="playRandom('drinks')">► Puhu juomahetki</button>
+        <button class="stop" onclick="stopSpeak()">⏹ Stop</button>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <small>Vinkki: lisää kotinäytölle saadaksesi sovelluksen.</small>
+  </footer>
 
 <script>
-let synth = window.speechSynthesis;
+  // --- KIELI ---
+  const LANGS = { FI: 'fi-FI', EN: 'en-US' };
+  let currentLang = localStorage.getItem('ay_lang') || 'EN';
 
-let p1 = "Hyvää huomenta. Päivä voi alkaa nyt positiivisella energialla.";
-let p2 = "Sinä pystyt tähän. Älä luovuta. Jokainen askel vie sinua eteenpäin.";
-let p3 = "Otetaan rennosti. Jutellaan kuin kahvilla ystävän kanssa.";
+  const fiBtn = document.getElementById('fiBtn');
+  const enBtn = document.getElementById('enBtn');
 
-function play(text){
-   let u = new SpeechSynthesisUtterance(text);
-   u.lang = 'fi-FI';
-   synth.cancel();
-   synth.speak(u);
-}
+  function setLang(l){
+    currentLang = l;
+    localStorage.setItem('ay_lang', l);
+    fiBtn.setAttribute('aria-pressed', l==='FI');
+    enBtn.setAttribute('aria-pressed', l==='EN');
+  }
+  fiBtn.onclick = ()=> setLang('FI');
+  enBtn.onclick = ()=> setLang('EN');
+  setLang(currentLang);
 
-function stop(){
-   synth.cancel();
-}
+  // --- VIESTIT ---
+  const DATA = {
+    EN: {
+      holidays: [
+        "Happy holidays.",
+        "Happy birthday!",
+        "Merry Christmas.",
+        "Happy New Year!",
+        "Happy Mother's Day.",
+        "Happy Father's Day.",
+        "Happy Thanksgiving.",
+        "Happy Hanukkah."
+      ],
+      mood: [
+        "Had a bad day? I'm here with you.",
+        "Had a great day! Nicely done."
+      ],
+      drinks: [
+        "Coffee time.",
+        "Tea time."
+      ]
+    },
+    FI: {
+      holidays: [
+        "Hyvää juhlapyhää.",
+        "Hyvää syntymäpäivää!",
+        "Hyvää joulua.",
+        "Hyvää uutta vuotta!",
+        "Hyvää äitienpäivää.",
+        "Hyvää isänpäivää.",
+        "Hyvää kiitospäivää.",
+        "Hyvää hanukkaa."
+      ],
+      mood: [
+        "Huono päivä? Olen tässä kanssasi.",
+        "Mahtava päivä! Hienosti meni."
+      ],
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ääniystävä</title>
+
+  <!-- PWA manifest -->
+  <link rel="manifest" href="/isanpaiva/manifest.json">
+  <meta name="theme-color" content="#ffffff"/>
+
+  <style>
+    body{font-family:system-ui,Arial;margin:0;background:#fafafa;color:#111}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:#fff;box-shadow:0 1px 8px rgba(0,0,0,.06);position:sticky;top:0}
+    h1{font-size:20px;margin:0}
+    .lang{display:flex;gap:8px}
+    .lang button{padding:8px 12px;border-radius:10px;border:1px solid #ddd;background:#fff}
+    main{padding:22px}
+    .card{background:#fff;border:1px solid #eee;border-radius:16px;padding:18px 16px;margin:12px 0;box-shadow:0 1px 6px rgba(0,0,0,.05)}
+    .card h2{margin:0 0 6px 0;font-size:18px}
+    .card p{margin:0 0 12px 0;color:#555}
+    .card button{width:100%;padding:14px 16px;font-size:18px;border-radius:12px;border:1px solid #ddd;background:#f6f6f6}
+    .row{display:grid;gap:12px}
+    .stop{margin-top:8px;background:#eee}
+    footer{padding:24px 16px;color:#777;text-align:center}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Ääniystävä</h1>
+    <div class="lang">
+      <button id="fiBtn" aria-pressed="true">Suomi</button>
+      <button id="enBtn" aria-pressed="false">English</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="row">
+      <div class="card">
+        <h2>Juhlapyhät</h2>
+        <p>Esim. joulu, uusivuosi, syntymäpäivä…</p>
+        <button onclick="playRandom('holidays')">► Puhu juhlapuhe</button>
+        <button class="stop" onclick="stopSpeak()">⏹ Stop</button>
+      </div>
+
+      <div class="card">
+        <h2>Päivän fiilis</h2>
+        <p>Hyvä tai huono päivä – lyhyt viesti.</p>
+        <button onclick="playRandom('mood')">► Puhu fiisipuhe</button>
+        <button class="stop" onclick="stopSpeak()">⏹ Stop</button>
+      </div>
+
+      <div class="card">
+        <h2>Juomahetki</h2>
+        <p>Kahvi- tai teehetken kaveri.</p>
+        <button onclick="playRandom('drinks')">► Puhu juomahetki</button>
+        <button class="stop" onclick="stopSpeak()">⏹ Stop</button>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <small>Vinkki: lisää kotinäytölle saadaksesi sovelluksen.</small>
+  </footer>
+
+<script>
+  // --- KIELI ---
+  const LANGS = { FI: 'fi-FI', EN: 'en-US' };
+  let currentLang = localStorage.getItem('ay_lang') || 'EN';
+
+  const fiBtn = document.getElementById('fiBtn');
+  const enBtn = document.getElementById('enBtn');
+
+  function setLang(l){
+    currentLang = l;
+    localStorage.setItem('ay_lang', l);
+    fiBtn.setAttribute('aria-pressed', l==='FI');
+    enBtn.setAttribute('aria-pressed', l==='EN');
+  }
+  fiBtn.onclick = ()=> setLang('FI');
+  enBtn.onclick = ()=> setLang('EN');
+  setLang(currentLang);
+
+  // --- VIESTIT ---
+  const DATA = {
+    EN: {
+      holidays: [
+        "Happy holidays.",
+        "Happy birthday!",
+        "Merry Christmas.",
+        "Happy New Year!",
+        "Happy Mother's Day.",
+        "Happy Father's Day.",
+        "Happy Thanksgiving.",
+        "Happy Hanukkah."
+      ],
+      mood: [
+        "Had a bad day? I'm here with you.",
+        "Had a great day! Nicely done."
+      ],
+      drinks: [
+        "Coffee time.",
+        "Tea time."
+      ]
+    },
+    FI: {
+      holidays: [
+        "Hyvää juhlapyhää.",
+        "Hyvää syntymäpäivää!",
+        "Hyvää joulua.",
+        "Hyvää uutta vuotta!",
+        "Hyvää äitienpäivää.",
+        "Hyvää isänpäivää.",
+        "Hyvää kiitospäivää.",
+        "Hyvää hanukkaa."
+      ],
+      mood: [
+        "Huono päivä? Olen tässä kanssasi.",
+        "Mahtava päivä! Hienosti meni."
+      ],
+      drinks: [
+        "Kahviaika.",
+        "Teetauko."
+      ]
+    }
+  };
+
+  // --- PUHE ---
+  const synth = window.speechSynthesis;
+  let voices = [];
+
+  function loadVoicesOnce(){
+    voices = synth.getVoices();
+    if(voices.length === 0){
+      // jotkin Androidit täyttävät listan viiveellä
+      synth.onvoiceschanged = () => { voices = synth.getVoices(); };
+    }
+  }
+  loadVoicesOnce();
+
+  function preferVoice(langCode){
+    const list = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith(langCode.toLowerCase()));
+    // valitse mies-/female-nimien perusteella jos löytyy
+    return list[0] || null;
+  }
+
+  function play(text){
+    try { synth.cancel(); } catch(e){}
+    const u = new SpeechSynthesisUtterance(text);
+    const tLang = currentLang === 'FI' ? LANGS.FI : LANGS.EN;
+    u.lang = tLang;
+    const v = preferVoice(tLang);
+    if(v) u.voice = v;
+    synth.speak(u);
+  }
+
+  function stopSpeak(){ try { synth.cancel(); } catch(e){} }
+
+  function playRandom(category){
+    const pack = DATA[currentLang][category];
+    if(!pack || pack.length===0) return;
+    const pick = pack[Math.floor(Math.random()*pack.length)];
+    play(pick);
+  }
+
+  // Service worker rekisteröinti PWA:lle
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/isanpaiva/sw.js').catch(()=>{});
+  }
 </script>
-
 </body>
-</html>
+</html>      drinks: [
+        "Kahviaika.",
+        "Teetauko."
+      ]
+    }
+  };
+
+  // --- PUHE ---
+  const synth = window.speechSynthesis;
+  let voices = [];
+
+  function loadVoicesOnce(){
+    voices = synth.getVoices();
+    if(voices.length === 0){
+      // jotkin Androidit täyttävät listan viiveellä
+      synth.onvoiceschanged = () => { voices = synth.getVoices(); };
+    }
+  }
+  loadVoicesOnce();
+
+  function preferVoice(langCode){
+    const list = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith(langCode.toLowerCase()));
+    // valitse mies-/female-nimien perusteella jos löytyy
+    return list[0] || null;
+  }
+
+  function play(text){
+    try { synth.cancel(); } catch(e){}
+    const u = new SpeechSynthesisUtterance(text);
+    const tLang = currentLang === 'FI' ? LANGS.FI : LANGS.EN;
+    u.lang = tLang;
+    const v = preferVoice(tLang);
+    if(v) u.voice = v;
+    synth.speak(u);
+  }
+
+  function stopSpeak(){ try { synth.cancel(); } catch(e){} }
+
+  function playRandom(category){
+    const pack = DATA[currentLang][category];
+    if(!pack || pack.length===0) return;
+    const pick = pack[Math.floor(Math.random()*pack.length)];
+    play(pick);
+  }
+
+  // Service worker rekisteröinti PWA:lle
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/isanpaiva/sw.js').catch(()=>{});
+  }
+</script>
+</body>
+</html> 
