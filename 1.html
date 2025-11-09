@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head><meta charset="utf-8"><title>Päivän tervehdys</title></head>
+<body style="font-size:22px;text-align:center;padding-top:50px;">
+Klikkaa puhuaksesi
+<script>
+const t="Tämä on päivän tervehdys. Ääni toimii, ja tämä on vain ensimmäinen versio.";
+document.body.onclick=()=>{let u=new SpeechSynthesisUtterance(t);u.lang="fi-FI";speechSynthesis.speak(u);}
+</script>
+</body>
+</html>
