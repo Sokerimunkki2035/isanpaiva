@@ -1,46 +1,21 @@
 <!DOCTYPE html>
 <html lang="fi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Ääniystävä</title>
-  <style>
-    body{background:#fafafa;font-family:system-ui,Arial;padding:20px}
-    h1{font-size:26px;margin-bottom:20px}
-    button{display:block;width:100%;margin:12px 0;padding:18px;font-size:20px;border-radius:12px;border:1px solid #ccc;background:white}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ääniystävä</title>
+<style>
+body{background:#fafafa;font-family:system-ui,Arial;padding:24px}
+h1{font-size:26px;margin-bottom:28px}
+button{width:100%;padding:18px;font-size:22px;margin-bottom:16px;border-radius:12px;border:1px solid #ccc;background:white}
+</style>
 </head>
 <body>
 
-<h1>Ääniystävä</h1>
+<h1>Valitse hahmo</h1>
 
-<button onclick="speakOnce()">Puhu kerran</button>
-<button onclick="speakFifty()">Puhu 50 kertaa</button>
-
-<script>
-const phrase = "Hyvää huomenta";
-
-function speakOnce(){
-  say(phrase);
-}
-
-async function speakFifty(){
-  for(let i=0; i<50; i++){
-    say(phrase);
-    await wait(1000);
-  }
-}
-
-function say(text){
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = "fi-FI";
-  speechSynthesis.speak(u);
-}
-
-function wait(ms){
-  return new Promise(r=>setTimeout(r,ms));
-}
-</script>
+<button onclick="location.href='aiti-hanhi.html'">Äiti-hanhi (60v)</button>
+<button onclick="location.href='aasi-pappa.html'">Aasi-pappa (70v)</button>
 
 </body>
 </html>
