@@ -1,14 +1,22 @@
 {
-  "name": "Ääniystävä",
-  "short_name": "Ääniystävä",
-  "description": "Pieni puhuva kaveri: juhlapyhät, fiilikset ja juomahetket – suomeksi ja englanniksi.",
-  "start_url": "/isanpaiva/",
+  "name": "Kahvipöytä — Ääniystävä",
+  "short_name": "Kahvipöytä",
+  "description": "Lempeä kahvipöytä, jossa Äiti-Hanhi ja Aasi-Pappa keskustelevat kanssasi ääneen.",
+  "start_url": "/isanpaiva/kahvipoyta.html",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
-  "orientation": "portrait",
+  "background_color": "#d6c2a1",
+  "theme_color": "#d6c2a1",
+  "scope": "/isanpaiva/",
   "icons": [
-    { "src": "/isanpaiva/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/isanpaiva/icon-512.png", "sizes": "512x512", "type": "image/png" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
   ]
 }
