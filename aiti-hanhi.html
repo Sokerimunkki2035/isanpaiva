@@ -1,41 +1,31 @@
 <!DOCTYPE html>
-<html lang="fi">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Äiti-hanhi</title>
+<title>Mother Goose</title>
 <style>
-body{background:#fafafa;font-family:system-ui,Arial;padding:20px}
-h1{font-size:24px;margin-bottom:20px}
-button{display:block;width:100%;padding:16px;font-size:20px;margin:10px 0;border-radius:12px;border:1px solid #ccc;background:white}
+body{background:#fafafa;font-family:system-ui,Arial;padding:24px;margin:0}
+h1{text-align:center;font-size:26px;margin-bottom:24px}
+button{width:100%;padding:16px;font-size:20px;margin-bottom:16px;
+border-radius:12px;border:1px solid #ccc;background:white}
 </style>
 </head>
 <body>
 
-<h1>Äiti-hanhi</h1>
+<h1>Mother Goose</h1>
 
-<button onclick="sayOnce()">Puhu kerran</button>
-<button onclick="sayFifty()">Puhu 50 kertaa</button>
+<button onclick="say()">Start</button>
+<button onclick="location.href='index.html'">Back</button>
 
 <script>
-const phrase="Olen täällä sinua varten, honk.";
-
-function sayOnce(){ say(phrase); }
-
-async function sayFifty(){
-  for(let i=0;i<50;i++){
-    say(phrase);
-    await wait(1000);
-  }
-}
-
-function say(t){
-  const u=new SpeechSynthesisUtterance(t);
-  u.lang="fi-FI";
+function say(){
+  let u = new SpeechSynthesisUtterance(
+    "Hello dear. I'm here with you. It's okay to take one breath. You're not alone right now. Mother Goose is here with you."
+  );
+  u.lang = "en-US";
   speechSynthesis.speak(u);
 }
-
-function wait(ms){return new Promise(r=>setTimeout(r,ms));}
 </script>
 
 </body>
