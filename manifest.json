@@ -1,12 +1,12 @@
 {
-  "name": "Kahvipöytä — Ääniystävä",
-  "short_name": "Kahvipöytä",
-  "description": "Lempeä kahvipöytä, jossa Äiti-Hanhi ja Aasi-Pappa keskustelevat kanssasi ääneen.",
-  "start_url": "/isanpaiva/kahvipoyta.html",
+  "name": "Ääniystävä",
+  "short_name": "Ääniystävä",
+  "description": "Ääniystävä on lämmin kahvihetki, jossa eläinhahmot tuovat seuraa yksinäisyyteen.",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#d6c2a1",
-  "theme_color": "#d6c2a1",
-  "scope": "/isanpaiva/",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
   "icons": [
     {
       "src": "icon-192.png",
