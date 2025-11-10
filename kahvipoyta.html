@@ -1,155 +1,42 @@
 <!DOCTYPE html>
-<html lang="fi">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Kahvipöytä – Ääniystävä</title>
+<title>Coffee Table</title>
 <style>
-  body{background:#fafafa;font-family:system-ui,Arial;margin:0}
-  header{position:sticky;top:0;background:#fff;padding:14px 16px;
-    box-shadow:0 1px 6px rgba(0,0,0,.06)}
-  h1{font-size:20px;margin:0}
-  main{padding:16px}
-  .status{margin:8px 0;color:#444;font-size:14px;min-height:1em}
-  .chat{background:#fff;border:1px solid #eee;border-radius:14px;
-    padding:12px;max-height:60vh;overflow:auto}
-  .msg{margin:10px 0}
-  .me{color:#111}
-  .hanhi{color:#0d6efd}
-  .pappa{color:#16a34a}
-  .row{display:flex;gap:8px;margin-top:10px}
-  .row button{flex:1;padding:10px;border-radius:10px;border:1px solid #ddd;background:#fff}
-  .input{display:flex;gap:8px;margin-top:10px}
-  .input input{flex:1;padding:12px;border:1px solid #ddd;border-radius:10px}
-  .input button{padding:12px 14px;border:1px solid #ddd;border-radius:10px;background:#fff}
-  .small{font-size:12px;color:#666;margin-top:6px}
+body{background:#fafafa;font-family:system-ui,Arial;padding:24px;margin:0}
+h1{text-align:center;font-size:26px;margin-bottom:24px}
+button{width:100%;padding:16px;font-size:20px;margin-bottom:16px;
+border-radius:12px;border:1px solid #ccc;background:white}
 </style>
 </head>
 <body>
-<header><h1>☕ Kahvipöytä – Ääniystävä</h1></header>
-<main>
-  <div id="status" class="status"></div>
-  <div id="chat" class="chat" aria-live="polite"></div>
 
-  <div class="row">
-    <button onclick="preset('minulla ei ole ketään')">minulla ei ole ketään</button>
-    <button onclick="preset('oli hyvä päivä töissä')">oli hyvä päivä töissä</button>
-    <button onclick="preset('saanko kysyä jotain')">saanko kysyä jotain</button>
-  </div>
+<h1>Coffee Table</h1>
 
-  <div class="input">
-    <input id="text" placeholder="Kirjoita tähän ja paina Lähetä…">
-    <button onclick="send()">Lähetä</button>
-    <button onclick="stopAll()">⏹</button>
-  </div>
-  <div class="small">Vinkki: ääni lähtee vain käyttäjän klikkauksen jälkeen (selaimen sääntö).</div>
-</main>
+<button onclick="talk()">Start Conversation</button>
+<button onclick="location.href='index.html'">Back</button>
 
 <script>
-/* ---------- TTS PERUS ---------- */
-const synth = window.speechSynthesis;
-const statusEl = document.getElementById('status');
-function setStatus(txt){ statusEl.textContent = txt || ""; }
+function talk(){
+  let line1 = new SpeechSynthesisUtterance(
+    "Hello dear. Mother Goose here. Sit down for a moment. Breathe with me."
+  );
+  line1.lang = "en-US";
 
-function speakUtter(text, onend){
-  try{ synth.cancel(); }catch(e){}
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = "fi-FI";
-  u.onend = ()=>{ setStatus(""); onend && onend(); };
-  synth.speak(u);
-}
-function stopAll(){
-  try{ synth.cancel(); }catch(e){}
-  setStatus("");
-}
+  let line2 = new SpeechSynthesisUtterance(
+    "Donkey Grandpa here too. I see you. We're not going anywhere. We stay with you."
+  );
+  line2.lang = "en-US";
 
-/* ---------- UI ---------- */
-const chat = document.getElementById('chat');
-function addLine(cls, who, text){
-  const div = document.createElement('div');
-  div.className = 'msg ' + cls;
-  div.textContent = who + ': ' + text;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-}
-function preset(text){ document.getElementById('text').value = text; send(); }
+  speechSynthesis.speak(line1);
 
-/* ---------- kevyt moderointi ---------- */
-const banned = [/rasis/i,/neger/i,/hitler/i,/natsi/i,/fag/i];
-function isBad(t){ return banned.some(rx => rx.test(t)); }
-
-/* ---------- persona-fragmentit ---------- */
-function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-
-function hanhiReply(userText){
-  const starts = [
-    "Olen tässä vierelläsi, kuulolla.",
-    "Kuulen sinut ja haluan, että tunnet olosi turvalliseksi.",
-    "Ymmärrän, että tämä hetki voi painaa."
-  ];
-  const middles = [
-    "Olen kulkenut monien maiden yli ja oppinut, että lempeys kantaa.",
-    "Voimme hengittää rauhassa, yhden pienen hengityksen kerrallaan.",
-    "Et ole yksin, vaikka siltä saattaa tuntua."
-  ];
-  const ends = [
-    "Haluatko kertoa lisää, honk?",
-    "Otan siivilläni pienen varjon pois päivästäsi, honk.",
-    "Jatketaan yhdessä vielä hetki, honk."
-  ];
-  return pick(starts)+" "+pick(middles)+" "+pick(ends);
-}
-
-function pappaReply(userText){
-  const starts = [
-    "Istun tähän viereen ja kaadan kuppiin vielä tilkan, ihaa.",
-    "Matkoilla opin: askel kerrallaan riittää, ihaa.",
-    "Katsos, joskus ilokin on hiljaista, ihaa."
-  ];
-  const questions = [
-    "Mikä olisi sinulle pieni hyvä juttu tänään?",
-    "Mihin suuntaan sydän kallistuisi seuraavaksi?",
-    "Kenen nimeä ajattelit mielessäsi äsken?"
-  ];
-  return pick(starts)+" "+pick(questions);
-}
-
-/* ---------- vuorottelulogiikka ---------- */
-async function send(){
-  const inp = document.getElementById('text');
-  const user = (inp.value || "").trim();
-  if(!user) return;
-
-  // muodosta vastaukset etukäteen
-  let h, p;
-
-  if(isBad(user)){
-    h = "Pidetään keskustelu turvallisena ja kunnioittavana. Voimme puhua yksinäisyydestä, toivosta tai tästä hetkestä. honk.";
-    p = "Aloitetaan pienellä hengityksellä yhdessä, ihaa. Mikä painaa juuri nyt?";
-  } else {
-    h = hanhiReply(user);
-    p = pappaReply(user);
-  }
-
-  // näytä käyttäjän viesti vasta kun hanhi alkaa puhumaan
-  addLine('hanhi','Äiti-Hanhi', "…"); // pieni placeholder ettei näyttö ole tyhjä
-  chat.removeChild(chat.lastChild);     // poistetaan placeholder heti
-  addLine('me','Sinä', user);
-
-  // Hanhin puhe ja status
-  addLine('hanhi','Äiti-Hanhi', h);
-  setStatus("Hanhi puhuu…");
-  speakUtter(h, ()=> {
-    // vasta hanhen loputtua → pappa
-    addLine('pappa','Aasi-pappa', p);
-    setStatus("Pappa puhuu…");
-    speakUtter(p, ()=> {
-      setStatus("");
-    });
-  });
-
-  inp.value = "";
+  line1.onend = () => {
+    speechSynthesis.speak(line2);
+  };
 }
 </script>
+
 </body>
 </html>
