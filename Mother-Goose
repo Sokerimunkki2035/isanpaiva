@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mother Goose</title>
+<style>
+body{background:#fafafa;font-family:system-ui,Arial;padding:24px;margin:0}
+h1{text-align:center;font-size:26px;margin-bottom:24px}
+button{width:100%;padding:16px;font-size:20px;margin-bottom:16px;
+border-radius:12px;border:1px solid #ccc;background:white}
+</style>
+</head>
+<body>
+
+<h1>Mother Goose</h1>
+
+<button onclick="say()">Start</button>
+<button onclick="location.href='index.html'">Back</button>
+
+<script>
+function say(){
+  let u = new SpeechSynthesisUtterance(
+    "Hello dear. I'm here with you. It's okay to take one breath. You're not alone right now. Mother Goose is here with you."
+  );
+  u.lang = "en-US";
+  speechSynthesis.speak(u);
+}
+</script>
+
+</body>
+</html>
