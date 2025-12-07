@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Coffee Table</title>
+<style>
+body{background:#fafafa;font-family:system-ui,Arial;padding:24px;margin:0}
+h1{text-align:center;font-size:26px;margin-bottom:24px}
+button{width:100%;padding:16px;font-size:20px;margin-bottom:16px;
+border-radius:12px;border:1px solid #ccc;background:white}
+</style>
+</head>
+<body>
+
+<h1>Coffee Table</h1>
+
+<button onclick="talk()">Start Conversation</button>
+<button onclick="location.href='index.html'">Back</button>
+
+<script>
+function talk(){
+  let line1 = new SpeechSynthesisUtterance(
+    "Hello dear. Mother Goose here. Sit down for a moment. Breathe with me."
+  );
+  line1.lang = "en-US";
+
+  let line2 = new SpeechSynthesisUtterance(
+    "Donkey Grandpa here too. I see you. We're not going anywhere. We stay with you."
+  );
+  line2.lang = "en-US";
+
+  speechSynthesis.speak(line1);
+
+  line1.onend = () => {
+    speechSynthesis.speak(line2);
+  };
+}
+</script>
+
+</body>
+</html>
