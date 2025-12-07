@@ -5,25 +5,82 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Donkey Grandpa</title>
 <style>
-body{background:#fafafa;font-family:system-ui,Arial;padding:24px;margin:0}
-h1{text-align:center;font-size:26px;margin-bottom:24px}
-button{width:100%;padding:16px;font-size:20px;margin-bottom:16px;
-border-radius:12px;border:1px solid #ccc;background:white}
+body{
+  background:#fafafa;
+  font-family:system-ui,Arial,sans-serif;
+  padding:24px;
+  margin:0;
+}
+h1{
+  text-align:center;
+  font-size:26px;
+  margin-bottom:8px;
+}
+p.subtitle{
+  text-align:center;
+  margin-top:0;
+  margin-bottom:24px;
+  opacity:0.8;
+}
+.card{
+  max-width:420px;
+  margin:0 auto;
+  background:white;
+  border-radius:16px;
+  padding:24px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.08);
+}
+.avatar{
+  width:96px;
+  height:96px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:56px;
+  margin:0 auto 16px auto;
+}
+.avatar.donkey{
+  background:#d7ecff;
+}
+.line{
+  text-align:center;
+  margin-bottom:24px;
+}
+button{
+  width:100%;
+  padding:16px;
+  font-size:20px;
+  margin-bottom:16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  background:white;
+}
 </style>
 </head>
 <body>
 
-<h1>Donkey Grandpa</h1>
+<div class="card">
+  <div class="avatar donkey">🫏</div>
+  <h1>Donkey Grandpa</h1>
+  <p class="subtitle">A slightly deeper, warm voice.</p>
 
-<button onclick="say()">Start</button>
-<button onclick="location.href='index.html'">Back</button>
+  <p class="line">
+    Press “Talk to me” and Grandpa will say a short message. Later we can build longer chats.
+  </p>
+
+  <button onclick="say()">Talk to me</button>
+  <button onclick="location.href='index.html'">Back</button>
+</div>
 
 <script>
 function say(){
-  let u = new SpeechSynthesisUtterance(
-    "Hey buddy. Life can be heavy. I know. But I'm right here. Let's sit for a moment. You are not forgotten. Not today. Not ever."
-  );
+  const text = "Hey buddy. Donkey Grandpa here. Life can be heavy, I know. But right now, I'm sitting with you. You are not forgotten. Not today. Not ever.";
+  let u = new SpeechSynthesisUtterance(text);
   u.lang = "en-US";
+  u.pitch = 0.8;   // hieman matalampi ääni
+  u.rate  = 0.95;  // vähän verkkaisempi
+  speechSynthesis.cancel();
   speechSynthesis.speak(u);
 }
 </script>
