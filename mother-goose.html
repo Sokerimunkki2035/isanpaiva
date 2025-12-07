@@ -5,25 +5,82 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Mother Goose</title>
 <style>
-body{background:#fafafa;font-family:system-ui,Arial;padding:24px;margin:0}
-h1{text-align:center;font-size:26px;margin-bottom:24px}
-button{width:100%;padding:16px;font-size:20px;margin-bottom:16px;
-border-radius:12px;border:1px solid #ccc;background:white}
+body{
+  background:#fafafa;
+  font-family:system-ui,Arial,sans-serif;
+  padding:24px;
+  margin:0;
+}
+h1{
+  text-align:center;
+  font-size:26px;
+  margin-bottom:8px;
+}
+p.subtitle{
+  text-align:center;
+  margin-top:0;
+  margin-bottom:24px;
+  opacity:0.8;
+}
+.card{
+  max-width:420px;
+  margin:0 auto;
+  background:white;
+  border-radius:16px;
+  padding:24px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.08);
+}
+.avatar{
+  width:96px;
+  height:96px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:56px;
+  margin:0 auto 16px auto;
+}
+.avatar.goose{
+  background:#ffe8c4;
+}
+.line{
+  text-align:center;
+  margin-bottom:24px;
+}
+button{
+  width:100%;
+  padding:16px;
+  font-size:20px;
+  margin-bottom:16px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  background:white;
+}
 </style>
 </head>
 <body>
 
-<h1>Mother Goose</h1>
+<div class="card">
+  <div class="avatar goose">🪿</div>
+  <h1>Mother Goose</h1>
+  <p class="subtitle">Gentle voice for lonely moments.</p>
 
-<button onclick="say()">Start</button>
-<button onclick="location.href='index.html'">Back</button>
+  <p class="line">
+    Press “Talk to me” and I will say a short greeting. Later we can add longer conversations.
+  </p>
+
+  <button onclick="say()">Talk to me</button>
+  <button onclick="location.href='index.html'">Back</button>
+</div>
 
 <script>
 function say(){
-  let u = new SpeechSynthesisUtterance(
-    "Hello dear. I'm here with you. It's okay to take one breath. You're not alone right now. Mother Goose is here with you."
-  );
+  const text = "Hello dear. I'm Mother Goose. I'm here with you. Let's take one calm breath together. You are not alone right now.";
+  let u = new SpeechSynthesisUtterance(text);
   u.lang = "en-US";
+  u.pitch = 1.1;   // hieman korkeampi ääni
+  u.rate  = 0.98;  // rauhallinen
+  speechSynthesis.cancel();
   speechSynthesis.speak(u);
 }
 </script>
