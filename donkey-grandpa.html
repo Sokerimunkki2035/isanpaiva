@@ -1,89 +1,79 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fi">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Donkey Grandpa</title>
-<style>
-body{
-  background:#fafafa;
-  font-family:system-ui,Arial,sans-serif;
-  padding:24px;
-  margin:0;
-}
-h1{
-  text-align:center;
-  font-size:26px;
-  margin-bottom:8px;
-}
-p.subtitle{
-  text-align:center;
-  margin-top:0;
-  margin-bottom:24px;
-  opacity:0.8;
-}
-.card{
-  max-width:420px;
-  margin:0 auto;
-  background:white;
-  border-radius:16px;
-  padding:24px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.08);
-}
-.avatar{
-  width:96px;
-  height:96px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:56px;
-  margin:0 auto 16px auto;
-}
-.avatar.donkey{
-  background:#d7ecff;
-}
-.line{
-  text-align:center;
-  margin-bottom:24px;
-}
-button{
-  width:100%;
-  padding:16px;
-  font-size:20px;
-  margin-bottom:16px;
-  border-radius:12px;
-  border:1px solid #ccc;
-  background:white;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaari Aasi</title>
+    <style>
+        body { background: #e3f2fd; font-family: sans-serif; padding: 20px; text-align: center; }
+        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto; }
+        button { width: 100%; padding: 20px; border-radius: 15px; border: none; font-size: 18px; font-weight: bold; background: #4a90e2; color: white; cursor: pointer; }
+    </style>
 </head>
 <body>
-
 <div class="card">
-  <div class="avatar donkey">🫏</div>
-  <h1>Donkey Grandpa</h1>
-  <p class="subtitle">A slightly deeper, warm voice.</p>
-
-  <p class="line">
-    Press “Talk to me” and Grandpa will say a short message. Later we can build longer chats.
-  </p>
-
-  <button onclick="say()">Talk to me</button>
-  <button onclick="location.href='index.html'">Back</button>
+    <h2>🫏 Vaari Aasi</h2>
+    <p>Paina nappia ja juttele vaarille.</p>
+    <button id="micBtn">🎤 PUHU</button>
+    <div id="status" style="margin: 10px 0; color: #666;"></div>
+    <div id="log" style="font-style: italic; color: #555; margin-top: 15px;"></div>
+    <a href="index.html" style="display:block; margin-top:20px; color:#999; text-decoration:none;">← Takaisin valikkoon</a>
 </div>
 
 <script>
-function say(){
-  const text = "Hey buddy. Donkey Grandpa here. Life can be heavy, I know. But right now, I'm sitting with you. You are not forgotten. Not today. Not ever.";
-  let u = new SpeechSynthesisUtterance(text);
-  u.lang = "en-US";
-  u.pitch = 0.8;   // hieman matalampi ääni
-  u.rate  = 0.95;  // vähän verkkaisempi
-  speechSynthesis.cancel();
-  speechSynthesis.speak(u);
-}
-</script>
+    const micBtn = document.getElementById('micBtn');
+    const log = document.getElementById('log');
+    const status = document.getElementById('status');
+    const synth = window.speechSynthesis;
+    let recognition;
 
+    if ('webkitSpeechRecognition' in window) {
+        recognition = new webkitSpeechRecognition();
+        recognition.lang = 'fi-FI';
+    }
+
+    micBtn.onclick = () => {
+        synth.speak(new SpeechSynthesisUtterance("")); // Bluetooth herätys
+        recognition.start();
+        status.innerText = "Vaari kuuntelee...";
+    };
+
+    recognition.onresult = async (event) => {
+        const text = event.results[0][0].transcript;
+        log.innerText = "Sinä: " + text;
+        status.innerText = "Vaari miettii...";
+        
+        const key = localStorage.getItem('openrouter_key');
+
+        try {
+            const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${key.trim()}`,
+                    'HTTP-Referer': window.location.origin
+                },
+                body: JSON.stringify({
+                    model: "google/gemini-2.0-flash-001",
+                    messages: [
+                        { role: "system", content: "Olet Vaari Aasi, vanha, hieman hidas mutta viisas ja ystävällinen aasi. Vastaa suomeksi vaarin tyyliin." },
+                        { role: "user", content: text }
+                    ]
+                })
+            });
+
+            const data = await resp.json();
+            const aiText = data.choices[0].message.content;
+            
+            setTimeout(() => {
+                const speak = new SpeechSynthesisUtterance(aiText);
+                speak.lang = 'fi-FI';
+                speak.onend = () => { status.innerText = ""; };
+                synth.speak(speak);
+            }, 300);
+        } catch (err) { status.innerText = "Virhe."; }
+    };
+</script>
 </body>
 </html>
+ 
