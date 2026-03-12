@@ -1,89 +1,87 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fi">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Mother Goose</title>
-<style>
-body{
-  background:#fafafa;
-  font-family:system-ui,Arial,sans-serif;
-  padding:24px;
-  margin:0;
-}
-h1{
-  text-align:center;
-  font-size:26px;
-  margin-bottom:8px;
-}
-p.subtitle{
-  text-align:center;
-  margin-top:0;
-  margin-bottom:24px;
-  opacity:0.8;
-}
-.card{
-  max-width:420px;
-  margin:0 auto;
-  background:white;
-  border-radius:16px;
-  padding:24px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.08);
-}
-.avatar{
-  width:96px;
-  height:96px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:56px;
-  margin:0 auto 16px auto;
-}
-.avatar.goose{
-  background:#ffe8c4;
-}
-.line{
-  text-align:center;
-  margin-bottom:24px;
-}
-button{
-  width:100%;
-  padding:16px;
-  font-size:20px;
-  margin-bottom:16px;
-  border-radius:12px;
-  border:1px solid #ccc;
-  background:white;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Äiti Hanhi</title>
+    <style>
+        :root { --p: #8bc34a; --bg: #f1f8e9; }
+        body { font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; background: var(--bg); text-align: center; }
+        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        button { width: 100%; padding: 20px; border-radius: 15px; border: none; font-size: 18px; font-weight: bold; cursor: pointer; background: var(--p); color: white; }
+        #log { margin-top: 20px; max-height: 200px; overflow-y: auto; font-style: italic; color: #555; }
+        .back-link { display: block; margin-top: 20px; color: #999; text-decoration: none; font-size: 14px; }
+    </style>
 </head>
 <body>
 
 <div class="card">
-  <div class="avatar goose">🪿</div>
-  <h1>Mother Goose</h1>
-  <p class="subtitle">Gentle voice for lonely moments.</p>
-
-  <p class="line">
-    Press “Talk to me” and I will say a short greeting. Later we can add longer conversations.
-  </p>
-
-  <button onclick="say()">Talk to me</button>
-  <button onclick="location.href='index.html'">Back</button>
+    <h2>🪿 Äiti Hanhi</h2>
+    <p>Paina nappia ja juttele minulle.</p>
+    <button id="micBtn">🎤 PUHU</button>
+    <div id="status" style="margin: 10px 0; font-size: 14px; color: #666;"></div>
+    <div id="log"></div>
+    <a href="index.html" class="back-link">⬅ Takaisin valikkoon</a>
 </div>
 
 <script>
-function say(){
-  const text = "Hello dear. I'm Mother Goose. I'm here with you. Let's take one calm breath together. You are not alone right now.";
-  let u = new SpeechSynthesisUtterance(text);
-  u.lang = "en-US";
-  u.pitch = 1.1;   // hieman korkeampi ääni
-  u.rate  = 0.98;  // rauhallinen
-  speechSynthesis.cancel();
-  speechSynthesis.speak(u);
-}
-</script>
+    const micBtn = document.getElementById('micBtn');
+    const log = document.getElementById('log');
+    const status = document.getElementById('status');
+    const synth = window.speechSynthesis;
+    let recognition;
 
+    if ('webkitSpeechRecognition' in window) {
+        recognition = new webkitSpeechRecognition();
+        recognition.lang = 'fi-FI';
+    }
+
+    micBtn.onclick = () => {
+        const wakeUp = new SpeechSynthesisUtterance("");
+        synth.speak(wakeUp); // Bluetooth-herätys
+        recognition.start();
+        status.innerText = "Kuunnellaan...";
+    };
+
+    recognition.onresult = async (event) => {
+        const text = event.results[0][0].transcript;
+        log.innerText = "Sinä: " + text;
+        status.innerText = "Äiti Hanhi miettii...";
+        
+        const key = localStorage.getItem('openrouter_key');
+
+        try {
+            const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${key.trim()}`,
+                    'HTTP-Referer': window.location.origin,
+                    'X-Title': 'SoundFriend'
+                },
+                body: JSON.stringify({
+                    model: "google/gemini-2.0-flash-001",
+                    messages: [
+                        { role: "system", content: "Olet Äiti Hanhi, huolehtivainen, loruileva ja ystävällinen hahmo. Vastaa lyhyesti suomeksi." },
+                        { role: "user", content: text }
+                    ]
+                })
+            });
+
+            const data = await resp.json();
+            const aiText = data.choices[0].message.content;
+            
+            setTimeout(() => {
+                const speak = new SpeechSynthesisUtterance(aiText);
+                speak.lang = 'fi-FI';
+                speak.onend = () => { status.innerText = ""; };
+                synth.speak(speak);
+            }, 300);
+
+        } catch (err) {
+            status.innerText = "Virhe yhteysessä.";
+        }
+    };
+</script>
 </body>
 </html>
