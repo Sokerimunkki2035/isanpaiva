@@ -3,86 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SoundFriend - Coffee Table</title>
+    <title>Vaari Aasi</title>
     <style>
-        :root { --p: #4a90e2; --bg: #fdf6e3; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: var(--bg); color: #5d4037; }
-        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); border: 2px solid #efebe9; }
-        h2 { text-align: center; color: #8d6e63; }
-        #log { margin-top: 20px; max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 10px; }
-        .bubble { padding: 12px 16px; border-radius: 18px; max-width: 80%; line-height: 1.5; font-size: 16px; }
-        .user { background: #e3f2fd; align-self: flex-end; color: #1565c0; border-bottom-right-radius: 2px; }
-        .ai { background: #f1f8e9; align-self: flex-start; color: #33691e; border-bottom-left-radius: 2px; border-left: 5px solid #8bc34a; }
-        button { width: 100%; padding: 20px; border-radius: 15px; border: none; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .mic-btn { background: #ff7043; color: white; box-shadow: 0 4px 10px rgba(255,112,67,0.3); }
-        .mic-btn:disabled { background: #bdbdbd; }
-        .pulse { animation: pulse-red 1.5s infinite; }
-        @keyframes pulse-red { 0% { transform: scale(1); } 50% { transform: scale(1.02); background: #f4511e; } 100% { transform: scale(1); } }
+        :root { --p: #8bc34a; --bg: #f1f8e9; }
+        body { font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; background: var(--bg); text-align: center; }
+        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        button { width: 100%; padding: 20px; border-radius: 15px; border: none; font-size: 18px; font-weight: bold; cursor: pointer; background: var(--p); color: white; }
+        #log { margin-top: 20px; max-height: 200px; overflow-y: auto; font-style: italic; color: #555; }
+        .back-link { display: block; margin-top: 20px; color: #999; text-decoration: none; font-size: 14px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>☕ Kahvipöytäkeskustelu</h2>
-    <p style="text-align: center; font-size: 14px;">Täällä juttelevat Aasi-vaari ja Äiti Hanhi.</p>
-    
-    <div id="status" style="text-align:center; height: 20px; font-size: 14px; margin-bottom: 10px;">Valmiina.</div>
-    <button id="micBtn" class="mic-btn">🎤 OSALLISTU KESKUSTELUUN</button>
-    
+    <h2>🐴Vaari Aasi</h2>
+    <p>Paina nappia ja juttele minulle.</p>
+    <button id="micBtn">🎤 PUHU</button>
+    <div id="status" style="margin: 10px 0; font-size: 14px; color: #666;"></div>
     <div id="log"></div>
-    
-    <button onclick="clearHistory()" style="background:none; color:#999; font-size:12px; margin-top:20px; text-decoration:underline;">Tyhjennä keskustelu</button>
+    <a href="index.html" class="back-link">⬅ Takaisin valikkoon</a>
 </div>
 
 <script>
     const micBtn = document.getElementById('micBtn');
-    const status = document.getElementById('status');
     const log = document.getElementById('log');
-    
-    let history = JSON.parse(localStorage.getItem('coffee_table_history')) || [];
+    const status = document.getElementById('status');
     const synth = window.speechSynthesis;
     let recognition;
 
-    // Alustetaan puheentunnistus
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        const SpeechRes = window.SpeechRecognition || window.webkitSpeechRecognition;
-        recognition = new SpeechRes();
+    if ('webkitSpeechRecognition' in window) {
+        recognition = new webkitSpeechRecognition();
         recognition.lang = 'fi-FI';
     }
 
-    function renderHistory() {
-        log.innerHTML = history.map(m => `<div class="bubble ${m.role === 'user' ? 'user' : 'ai'}"><b>${m.name || ''}</b><br>${m.content}</div>`).join('');
-        log.scrollTop = log.scrollHeight;
-    }
-    renderHistory();
-
-    function clearHistory() {
-        localStorage.removeItem('coffee_table_history');
-        history = [];
-        renderHistory();
-    }
-
     micBtn.onclick = () => {
-        // Herätetään Bluetooth-audio tyhjällä äänellä
         const wakeUp = new SpeechSynthesisUtterance("");
-        synth.speak(wakeUp);
-
-        try {
-            recognition.start();
-            status.innerText = "Kuunnellaan...";
-            micBtn.classList.add('pulse');
-            micBtn.disabled = true;
-        } catch (e) { status.innerText = "Yritä uudelleen."; micBtn.disabled = false; }
+        synth.speak(wakeUp); // Bluetooth-herätys
+        recognition.start();
+        status.innerText = "Kuunnellaan...";
     };
 
     recognition.onresult = async (event) => {
         const text = event.results[0][0].transcript;
-        micBtn.classList.remove('pulse');
-        status.innerText = "Hahmot miettivät vastausta...";
+        log.innerText = "Sinä: " + text;
+        status.innerText = "Äiti Hanhi miettii...";
         
-        history.push({ role: "user", content: text, name: "Sinä" });
-        renderHistory();
-
         const key = localStorage.getItem('openrouter_key');
 
         try {
@@ -95,10 +60,10 @@
                     'X-Title': 'SoundFriend'
                 },
                 body: JSON.stringify({
-                    model: "google/gemini-2.0-flash-001", 
+                    model: "google/gemini-2.0-flash-001",
                     messages: [
-                        { role: "system", content: "Olet kahden hahmon yhdistelmä: Aasi-vaari (hidas, hieman höperö mutta viisas) ja Äiti Hanhi (huolehtivainen ja loruileva). Vastaa niin, että molemmat hahmot sanovat jotain. Erota puheenvuorot näin: 'Aasi-vaari: [puhe]' ja 'Äiti Hanhi: [puhe]'. Pysy rooleissa ja vastaa suomeksi." },
-                        ...history.map(h => ({role: h.role, content: h.content}))
+                        { role: "system", content: "Olet Äiti Hanhi, huolehtivainen, loruileva ja ystävällinen hahmo. Vastaa lyhyesti suomeksi." },
+                        { role: "user", content: text }
                     ]
                 })
             });
@@ -106,30 +71,17 @@
             const data = await resp.json();
             const aiText = data.choices[0].message.content;
             
-            history.push({ role: "assistant", content: aiText, name: "Kahvipöytä" });
-            localStorage.setItem('coffee_table_history', JSON.stringify(history));
-            renderHistory();
-
-            // Puhe Bluetooth-tuella (pieni viive alkuun)
             setTimeout(() => {
                 const speak = new SpeechSynthesisUtterance(aiText);
                 speak.lang = 'fi-FI';
-                speak.rate = 0.9; // Hieman rauhallisempi tahti
-                speak.onend = () => {
-                    status.innerText = "Valmis.";
-                    micBtn.disabled = false;
-                };
+                speak.onend = () => { status.innerText = ""; };
                 synth.speak(speak);
             }, 300);
 
         } catch (err) {
             status.innerText = "Virhe yhteysessä.";
-            micBtn.disabled = false;
         }
     };
-
-    recognition.onerror = () => { micBtn.disabled = false; micBtn.classList.remove('pulse'); status.innerText = "Mikrofoni ei kuullut."; };
 </script>
-
 </body>
 </html>
