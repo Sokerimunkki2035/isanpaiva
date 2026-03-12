@@ -2,86 +2,24 @@
 <html lang="fi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vaari Aasi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundFriend - Isänpäivä</title>
     <style>
-        :root { --p: #8bc34a; --bg: #f1f8e9; }
-        body { font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; background: var(--bg); text-align: center; }
-        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        button { width: 100%; padding: 20px; border-radius: 15px; border: none; font-size: 18px; font-weight: bold; cursor: pointer; background: var(--p); color: white; }
-        #log { margin-top: 20px; max-height: 200px; overflow-y: auto; font-style: italic; color: #555; }
-        .back-link { display: block; margin-top: 20px; color: #999; text-decoration: none; font-size: 14px; }
+        body { background: #fdf6e3; font-family: sans-serif; padding: 20px; text-align: center; color: #5d4037; }
+        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 450px; margin: 0 auto; }
+        .btn { width: 100%; padding: 20px; margin: 12px 0; border-radius: 15px; border: none; font-size: 18px; font-weight: bold; cursor: pointer; display: block; text-decoration: none; box-sizing: border-box; }
+        .btn-primary { background: #ff7043; color: white; }
+        .btn-secondary { background: #8bc34a; color: white; }
+        .btn-accent { background: #4a90e2; color: white; }
     </style>
 </head>
 <body>
-
-<div class="card">
-    <h2>🐴Vaari Aasi</h2>
-    <p>Paina nappia ja juttele minulle.</p>
-    <button id="micBtn">🎤 PUHU</button>
-    <div id="status" style="margin: 10px 0; font-size: 14px; color: #666;"></div>
-    <div id="log"></div>
-    <a href="index.html" class="back-link">⬅ Takaisin valikkoon</a>
-</div>
-
-<script>
-    const micBtn = document.getElementById('micBtn');
-    const log = document.getElementById('log');
-    const status = document.getElementById('status');
-    const synth = window.speechSynthesis;
-    let recognition;
-
-    if ('webkitSpeechRecognition' in window) {
-        recognition = new webkitSpeechRecognition();
-        recognition.lang = 'fi-FI';
-    }
-
-    micBtn.onclick = () => {
-        const wakeUp = new SpeechSynthesisUtterance("");
-        synth.speak(wakeUp); // Bluetooth-herätys
-        recognition.start();
-        status.innerText = "Kuunnellaan...";
-    };
-
-    recognition.onresult = async (event) => {
-        const text = event.results[0][0].transcript;
-        log.innerText = "Sinä: " + text;
-        status.innerText = "Äiti Hanhi miettii...";
-        
-        const key = localStorage.getItem('openrouter_key');
-
-        try {
-            const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${key.trim()}`,
-                    'HTTP-Referer': window.location.origin,
-                    'X-Title': 'SoundFriend'
-                },
-                body: JSON.stringify({
-                    model: "google/gemini-2.0-flash-001",
-                    messages: [
-                        { role: "system", content: "Olet Äiti Hanhi, huolehtivainen, loruileva ja ystävällinen hahmo. Vastaa lyhyesti suomeksi." },
-                        { role: "user", content: text }
-                    ]
-                })
-            });
-
-            const data = await resp.json();
-            const aiText = data.choices[0].message.content;
-            
-            setTimeout(() => {
-                const speak = new SpeechSynthesisUtterance(aiText);
-                speak.lang = 'fi-FI';
-                speak.onend = () => { status.innerText = ""; };
-                synth.speak(speak);
-            }, 300);
-
-        } catch (err) {
-            status.innerText = "Virhe yhteysessä.";
-        }
-    };
-</script>
+    <div class="card">
+        <h1>🎁 SoundFriend</h1>
+        <a href="coffee-table.html" class="btn btn-primary">☕ Kahvipöytä (Molemmat)</a>
+        <a href="mother-goose.html" class="btn btn-secondary">🪿 Äiti Hanhi</a>
+        <a href="donkey-grandpa.html" class="btn btn-accent">🫏 Aasi-vaari</a>
+    </div>
 </body>
 </html>
+ 
